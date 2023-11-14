@@ -4,8 +4,8 @@ data:
     train_pipeline:
         dataset:
             _target_: openhands.datasets.isolated.WLASLDataset
-            split_file: /training_data/wlasl_new.json
-            root_dir: /path/to/poses/
+            split_file: training_data/wlasl_new.json
+            root_dir: training_data/pose_per_individual_videos
             splits: "train"
             modality: "pose"
 
@@ -19,6 +19,27 @@ data:
                 shear_std: 0.1
             - RotatationTransform:
                 rotation_std: 0.1
+        
+        parameters: 
+            [
+                "Handshape",
+                # "Selected Fingers",
+                # "Flexion",
+                # "Spread",
+                # "Spread Change",
+                # "Thumb Position",
+                # "Thumb Contact",
+                # "Sign Type",
+                # "Path Movement",
+                # "Repeated Movement",
+                # "Major Location",
+                "Minor Location",
+                # "Second Minor Location",
+                # "Contact",
+                # "Nondominant Handshape", 
+                # "Wrist Twist",
+                # "Handshape Morpheme 2"
+            ]
 
         dataloader:
             _target_: torch.utils.data.DataLoader
@@ -32,8 +53,8 @@ data:
     valid_pipeline:
         dataset:
             _target_: openhands.datasets.isolated.WLASLDataset
-            split_file: /training_data/wlasl_new.json
-            root_dir: /path/to/poses/
+            split_file: training_data/wlasl_new.json
+            root_dir: pose_per_individual_videos
             splits: "test"
             modality: "pose"
 
@@ -43,11 +64,33 @@ data:
             - CenterAndScaleNormalize:
                 reference_points_preset: shoulder_mediapipe_holistic_minimal_27
                 scale_factor: 1
+        
+        parameters: 
+            [
+                "Handshape",
+                # "Selected Fingers",
+                # "Flexion",
+                # "Spread",
+                # "Spread Change",
+                # "Thumb Position",
+                # "Thumb Contact",
+                # "Sign Type",
+                # "Path Movement",
+                # "Repeated Movement",
+                # "Major Location",
+                "Minor Location",
+                # "Second Minor Location",
+                # "Contact",
+                # "Nondominant Handshape", 
+                # "Wrist Twist",
+                # "Handshape Morpheme 2"
+            ]
 
         dataloader:
             _target_: torch.utils.data.DataLoader
             batch_size: 32
-            shuffle: true
+            shuffle: false
+            persistent_workers: True
             num_workers: 3
             pin_memory: true
             drop_last: false
@@ -58,7 +101,7 @@ model:
         params:
             num_points: 27
     decoder:
-        type: param_bert
+        type: bert
         params:
             max_position_embeddings: 121
             layer_norm_eps: 1e-12
@@ -102,7 +145,7 @@ optim:
             T_max: 10
 
 trainer:
-    gpus: 1
+    accelerator: 'gpu'
     max_epochs: 150
     # resume_from_checkpoint: /path/to/model.ckpt
 

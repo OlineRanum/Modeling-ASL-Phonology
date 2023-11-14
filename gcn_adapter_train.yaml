@@ -130,7 +130,7 @@ optim:
             T_max: 10
 
 trainer:
-    gpus: 1
+    accelerator: 'gpu'
     max_epochs: 150
     # resume_from_checkpoint: /path/to/model.ckpt
 

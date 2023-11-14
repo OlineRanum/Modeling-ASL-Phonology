@@ -4,10 +4,32 @@ data:
     train_pipeline:
         dataset:
             _target_: openhands.datasets.isolated.WLASLDataset
-            split_file: /training_data/wlasl_new.json
+            split_file: training_data/wlasl_new.json
             root_dir: /path/to/poses/
             splits: "train"
             modality: "pose"
+        
+        parameters: 
+            [
+                "Handshape",
+                # "Selected Fingers",
+                # "Flexion",
+                # "Spread",
+                # "Spread Change",
+                # "Thumb Position",
+                # "Thumb Contact",
+                # "Sign Type",
+                # "Path Movement",
+                # "Repeated Movement",
+                # "Major Location",
+                "Minor Location",
+                # "Second Minor Location",
+                # "Contact",
+                # "Nondominant Handshape", 
+                # "Wrist Twist",
+                # "Handshape Morpheme 2"
+            ]
+
 
         transforms:
             - PoseSelect:
@@ -32,7 +54,7 @@ data:
     valid_pipeline:
         dataset:
             _target_: openhands.datasets.isolated.WLASLDataset
-            split_file: /training_data/wlasl_new.json
+            split_file: training_data/wlasl_new.json
             root_dir: /path/to/poses/
             splits: "test"
             modality: "pose"
@@ -43,6 +65,28 @@ data:
             - CenterAndScaleNormalize:
                 reference_points_preset: shoulder_mediapipe_holistic_minimal_27
                 scale_factor: 1
+        
+        parameters: 
+            [
+                "Handshape",
+                # "Selected Fingers",
+                # "Flexion",
+                # "Spread",
+                # "Spread Change",
+                # "Thumb Position",
+                # "Thumb Contact",
+                # "Sign Type",
+                # "Path Movement",
+                # "Repeated Movement",
+                # "Major Location",
+                "Minor Location",
+                # "Second Minor Location",
+                # "Contact",
+                # "Nondominant Handshape", 
+                # "Wrist Twist",
+                # "Handshape Morpheme 2"
+            ]
+        
 
         dataloader:
             _target_: torch.utils.data.DataLoader
@@ -54,7 +98,7 @@ data:
 
 model:
     encoder:
-        type: decoupled-gcn
+        type: cnn3d
         params:
             graph_args:
                 num_nodes: 27
@@ -127,7 +171,7 @@ optim:
             T_max: 10
 
 trainer:
-    gpus: 1
+    accelerator: 'gpu'
     max_epochs: 150
     # resume_from_checkpoint: /path/to/model.ckpt
 
