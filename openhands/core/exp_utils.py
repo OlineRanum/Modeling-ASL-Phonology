@@ -1,7 +1,7 @@
 import os
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger, WandbLogger
-from pytorch_lightning.loggers.base import LoggerCollection
+#from pytorch_lightning.loggers.base import LoggerCollection
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
@@ -62,9 +62,9 @@ def configure_loggers(
 
         logger_list.append(wandb_logger)
 
-    logger_list = LoggerCollection(logger_list)
+#    logger_list = LoggerCollection(logger_list)
 
-    trainer.logger_connector.configure_logger(logger_list)
+#    trainer.logger_connector.configure_logger(logger_list)
 
 
 def configure_checkpointing(trainer, cfg):
