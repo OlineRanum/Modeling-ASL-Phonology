@@ -1,7 +1,10 @@
 training_data/
 logs/
+wandb/
+lightning_logs/
+
 *.job
 slurm*
-lightning_logs
 *__pycache__*
-wandb/
+
+localnotes.txt
