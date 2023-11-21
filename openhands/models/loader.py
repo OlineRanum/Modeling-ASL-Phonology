@@ -71,7 +71,9 @@ def load_decoder(decoder_cfg, num_class, encoder, params = None):
         from .decoder.fc import NParamFC
 
         return NParamFC(
-            n_features=n_out_features, num_class=num_class, params=params, 
+            n_features=n_out_features, 
+            num_class=num_class, 
+            params=params, 
             **decoder_cfg.params
         )
 
@@ -89,6 +91,17 @@ def load_decoder(decoder_cfg, num_class, encoder, params = None):
             num_class=num_class,
             config=decoder_cfg.params,
         )
+    
+    elif decoder_cfg.type == "param_bert":
+        from .decoder.bert_hf import NParamBERT
+
+        return NParamBERT(
+            n_features=n_out_features,
+            num_class=num_class,
+            params = params, 
+            config=decoder_cfg.params,
+        )
+
     elif decoder_cfg.type == "fine_tuner":
         from .decoder.fine_tuner import FineTuner
 
