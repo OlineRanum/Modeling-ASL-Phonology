@@ -1,16 +1,50 @@
-pretrained: #/path/to/pretrained_model.ckpt
+pretrained: pretrained_models/slgcn_16phonemes.ckpt
 data:
-    modality: "pose"
+    variables:
+        # Set Data paths
+        DATA_PATH: &data_path training_data/wlasl_new.json
+        POSE_PATH: &pose_path training_data/wlasl_poses_pickle/
+        TARGET_Path: &target_path  openhands.datasets.isolated.WLASLDataset
+        
+        # Set modality
+        MOD: &modality "pose"
+
+        # Set model name
+        MODEL_NAME: &model_name base_bert
+
+        # Select phonological parameters
+        PARAMETERS: &params  [
+                "Handshape",
+                 "Selected Fingers",
+                 "Flexion",
+                 "Spread",
+                 "Spread Change",
+                 "Thumb Position",
+                 "Thumb Contact",
+                 "Sign Type",
+                 "Path Movement",
+                 "Repeated Movement",
+                 "Major Location",
+                 "Minor Location",
+                 "Second Minor Location",
+                 "Contact",
+                 "Nondominant Handshape", 
+                 "Wrist Twist",
+                 "Handshape Morpheme 2"
+            ]
+
+    modality: *modality
     
     test_pipeline:
             dataset:
-                _target_: openhands.datasets.isolated.WLASLDataset
-                root_dir: /path/to/poses
-                split_file: /training_data/wlasl_new.json
+                _target_: *target_path
+                split_file: *data_path
+                root_dir: *pose_path
                 splits: "test"
-                modality: "pose"
+                modality: *modality
                 inference_mode: true
-            results: /path/to/save_results.jsonl
+                results: results/save_results.jsonl
+
 
             transforms:
                 - PoseSelect:
@@ -26,6 +60,8 @@ data:
                 num_workers: 3
                 pin_memory: true
                 drop_last: false
+            
+            parameters: *params
 
 model:
     encoder:
@@ -66,26 +102,7 @@ model:
         type: param_fc
         params:
             dropout_ratio: 0
-        parameters: 
-            [
-                # "Handshape",
-                # "Selected Fingers",
-                # "Flexion",
-                # "Spread",
-                # "Spread Change",
-                # "Thumb Position",
-                # "Thumb Contact",
-                # "Sign Type",
-                # "Path Movement",
-                # "Repeated Movement",
-                # "Major Location",
-                # "Minor Location",
-                # "Second Minor Location",
-                # "Contact",
-                # "Nondominant Handshape", 
-                # "Wrist Twist",
-                # "Handshape Morpheme 2"
-            ]
+        parameters: *params
 
 
 optim:
@@ -102,22 +119,21 @@ optim:
             T_max: 10
 
 trainer:
-    gpus: 1
     max_epochs: 1000
 
 exp_manager:
     create_tensorboard_logger: true
     create_wandb_logger: true
     wandb_logger_kwargs:
-        name: model_name_here
-        project: project_name_here
+        name: *model_name
+        project: PASL
 
     create_checkpoint_callback: true
     checkpoint_callback_params:
         monitor: "val_acc"
         mode: "max"
         save_top_k: 3
-        dirpath: "/pretrained_models/"
+        dirpath: "pretrained_models/"
 
     early_stopping_callback: true
     early_stopping_params:

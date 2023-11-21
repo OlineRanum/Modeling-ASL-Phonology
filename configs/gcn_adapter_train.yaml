@@ -163,7 +163,7 @@ exp_manager:
         monitor: "val_acc"
         mode: "max"
         save_top_k: 1
-        dirpath: "/new_models/"
+        dirpath: "new_models/"
 
     early_stopping_callback: true
     early_stopping_params:

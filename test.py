@@ -1,7 +1,7 @@
 import omegaconf
 from openhands.apis.inference import InferenceModel
 
-cfg = omegaconf.OmegaConf.load("./test_config_here.yaml")
+cfg = omegaconf.OmegaConf.load("configs/gcn_base_all_test.yaml")
 model = InferenceModel(cfg=cfg)
 model.init_from_checkpoint_if_available()
 if cfg.data.test_pipeline.dataset.inference_mode:
