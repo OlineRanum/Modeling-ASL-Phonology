@@ -39,9 +39,11 @@ class ClassificationModel(InferenceModel):
             # self.accuracy_metric(F.softmax(y_hat, dim=-1), batch["labels"])
             
 
-        self.log("train_loss", loss)
-        self.log("train_acc", acc / len(params), on_step=True, on_epoch=False, prog_bar=True)
-
+        self.log("train_loss", loss, batch_size = len(batch['files']))
+        try:
+            self.log("train_acc", acc / len(params), on_step=True, on_epoch=False, prog_bar=True, batch_size = len(batch['files']))
+        except ZeroDivisionError:
+            self.log("train_acc", acc, on_step=True, on_epoch=False, prog_bar=True, batch_size = len(batch['files']))
         return {"loss": loss, "train_acc": acc}
 
     def validation_step(self, batch, batch_idx):
@@ -63,12 +65,12 @@ class ClassificationModel(InferenceModel):
         for p in params:
             preds_p = F.softmax(y_hat_params[p], dim=-1)
             p_acc_top1 = self.accuracy_metric(preds_p, batch["params"][p])
-            self.log(p + "_acc", p_acc_top1, on_step=False, on_epoch=True, prog_bar=True)
+            self.log(p + "_acc", p_acc_top1, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
 
-        self.log("val_loss", loss)
-        self.log("val_acc", acc_top1, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val_acc_top3", acc_top3, on_step=False, on_epoch=True, prog_bar=True)
-        self.log("val_acc_top5", acc_top5, on_step=False, on_epoch=True, prog_bar=True)
+        self.log("val_loss", loss, batch_size = len(batch['files']))
+        self.log("val_acc", acc_top1, on_step=False, on_epoch=True, prog_bar=True,batch_size = len(batch['files']) )
+        self.log("val_acc_top3", acc_top3, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
+        self.log("val_acc_top5", acc_top5, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
 
         return {"valid_loss": loss, "valid_acc": acc_top1}
 
