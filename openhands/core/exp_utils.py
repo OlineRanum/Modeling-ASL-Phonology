@@ -6,7 +6,9 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 def get_trainer(cfg):
-    trainer = pl.Trainer(**cfg.trainer)
+    tb_logger = TensorBoardLogger(save_dir="logs/")
+    wandb_logger = WandbLogger(project="my_project", name="my_experiment")
+    trainer = pl.Trainer(logger=[tb_logger, wandb_logger], **cfg.trainer)
     experiment_manager(trainer, cfg.get("exp_manager", None))
     return trainer
 
