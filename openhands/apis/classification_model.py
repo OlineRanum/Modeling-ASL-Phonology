@@ -36,11 +36,13 @@ class ClassificationModel(InferenceModel):
         # self.model._modules['decoder']._modules['param_clfs']._modules['Handshape']._parameters['weight'].requires_grad
         # self._datamodule.train_dataset.id_to_gloss
         # This was updated in newest version 
-        loss = self.loss(y_hat, batch["labels"]) + \
-            sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
+        loss = self.loss(y_hat, batch["labels"])
+        if params:
+            loss += sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
         # This was updated in newest version 
-        acc = self.accuracy_metric(F.softmax(y_hat, dim=-1), batch["labels"]) + \
-            sum([self.accuracy_metric(F.softmax(y_hat_params[p], dim=-1), batch["params"][p]) for p in params])
+        acc = self.accuracy_metric(F.softmax(y_hat, dim=-1), batch["labels"])
+        if params:
+            acc += sum([self.accuracy_metric(F.softmax(y_hat_params[p], dim=-1), batch["params"][p]) for p in params])
 
         self.log("train_loss", loss, batch_size = len(batch['files']))
         # This was updated in newest version 
@@ -57,19 +59,22 @@ class ClassificationModel(InferenceModel):
         params = self.cfg.data.valid_pipeline.parameters
         y_hat, y_hat_params = self.model(batch["frames"])
 
+        
         # This was updated in newest version 
-        loss = self.loss(y_hat, batch["labels"]) + \
-            sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
-
+        loss = self.loss(y_hat, batch["labels"])
+        if params:
+            loss += sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
+        
         preds = F.softmax(y_hat, dim=-1)
         acc_top1 = self.accuracy_metric(preds, batch["labels"])
         acc_top3 = self.accuracy_metric(preds, batch["labels"], top_k=3)
         acc_top5 = self.accuracy_metric(preds, batch["labels"], top_k=5)
 
-        for p in params:
-            preds_p = F.softmax(y_hat_params[p], dim=-1)
-            p_acc_top1 = self.accuracy_metric(preds_p, batch["params"][p])
-            self.log(p + "_acc", p_acc_top1, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
+        if params:
+            for p in params:
+                preds_p = F.softmax(y_hat_params[p], dim=-1)
+                p_acc_top1 = self.accuracy_metric(preds_p, batch["params"][p])
+                self.log(p + "_acc", p_acc_top1, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
 
         self.log("val_loss", loss,  batch_size = len(batch['files']))
         self.log("val_acc", acc_top1, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
@@ -77,7 +82,6 @@ class ClassificationModel(InferenceModel):
         self.log("val_acc_top5", acc_top5, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
 
         return {"valid_loss": loss, "valid_acc": acc_top1}
-
     def configure_optimizers(self):
         """
         Returns the optimizer and the LR scheduler to be used by Lightning.
