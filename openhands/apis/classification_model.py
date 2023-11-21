@@ -5,7 +5,6 @@ from ..models.loader import get_model
 from ..core.losses import CrossEntropyLoss, SmoothedCrossEntropyLoss
 from ..core.data import DataModule
 from .inference import InferenceModel
-import json
 
 class ClassificationModel(InferenceModel):
     """
@@ -28,22 +27,26 @@ class ClassificationModel(InferenceModel):
         Lightning calls this inside the training loop with the data from the training dataloader
         passed in as `batch` and calculates the loss and the accuracy.
         """
+        # assert 1 == 2
+        # This was updated in newest version 
         params = self.cfg.data.train_pipeline.parameters
         y_hat, y_hat_params = self.model(batch["frames"])
 
-        loss = sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
-            # self.loss(y_hat, batch["labels"])
-            
-
-        acc = sum([self.accuracy_metric(F.softmax(y_hat_params[p], dim=-1), batch["params"][p]) for p in params])
-            # self.accuracy_metric(F.softmax(y_hat, dim=-1), batch["labels"])
-            
+        
+        # self.model._modules['decoder']._modules['param_clfs']._modules['Handshape']._parameters['weight'].requires_grad
+        # self._datamodule.train_dataset.id_to_gloss
+        # This was updated in newest version 
+        loss = self.loss(y_hat, batch["labels"]) + \
+            sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
+        # This was updated in newest version 
+        acc = self.accuracy_metric(F.softmax(y_hat, dim=-1), batch["labels"]) + \
+            sum([self.accuracy_metric(F.softmax(y_hat_params[p], dim=-1), batch["params"][p]) for p in params])
 
         self.log("train_loss", loss, batch_size = len(batch['files']))
-        try:
-            self.log("train_acc", acc / len(params), on_step=True, on_epoch=False, prog_bar=True, batch_size = len(batch['files']))
-        except ZeroDivisionError:
-            self.log("train_acc", acc, on_step=True, on_epoch=False, prog_bar=True, batch_size = len(batch['files']))
+        # This was updated in newest version 
+        self.log("train_acc", acc, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
+        # self.log("train_acc", acc / len(params), on_step=True, on_epoch=False, prog_bar=True)
+
         return {"loss": loss, "train_acc": acc}
 
     def validation_step(self, batch, batch_idx):
@@ -54,8 +57,9 @@ class ClassificationModel(InferenceModel):
         params = self.cfg.data.valid_pipeline.parameters
         y_hat, y_hat_params = self.model(batch["frames"])
 
-        loss = sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
-            # self.loss(y_hat, batch["labels"])
+        # This was updated in newest version 
+        loss = self.loss(y_hat, batch["labels"]) + \
+            sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
 
         preds = F.softmax(y_hat, dim=-1)
         acc_top1 = self.accuracy_metric(preds, batch["labels"])
@@ -67,8 +71,8 @@ class ClassificationModel(InferenceModel):
             p_acc_top1 = self.accuracy_metric(preds_p, batch["params"][p])
             self.log(p + "_acc", p_acc_top1, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
 
-        self.log("val_loss", loss, batch_size = len(batch['files']))
-        self.log("val_acc", acc_top1, on_step=False, on_epoch=True, prog_bar=True,batch_size = len(batch['files']) )
+        self.log("val_loss", loss,  batch_size = len(batch['files']))
+        self.log("val_acc", acc_top1, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
         self.log("val_acc_top3", acc_top3, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
         self.log("val_acc_top5", acc_top5, on_step=False, on_epoch=True, prog_bar=True, batch_size = len(batch['files']))
 
@@ -87,7 +91,8 @@ class ClassificationModel(InferenceModel):
         loss = conf.loss
         assert loss in ["CrossEntropyLoss", "SmoothedCrossEntropyLoss"]
         if loss == "CrossEntropyLoss":
-            return CrossEntropyLoss(ignore_index=-1)
+            # This was updated in newest version from ignore_index -1 ??????
+            return CrossEntropyLoss(ignore_index=0)
         return SmoothedCrossEntropyLoss()
 
     def setup_metrics(self):
