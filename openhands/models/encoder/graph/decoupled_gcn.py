@@ -7,6 +7,7 @@ from omegaconf import OmegaConf
 from .graph_utils import SpatialGraph
 
 # https://github.com/jackyjsy/CVPR21Chal-SLR
+#### This is the SL GCN model
 
 def conv_init(conv):
     nn.init.kaiming_normal_(conv.weight, mode="fan_out")
