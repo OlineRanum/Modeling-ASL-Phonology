@@ -1,6 +1,11 @@
 data:
     variables:
+        # Set model name
+        MODEL_NAME: &model_name base_decoupled_bert_8
+        PROJECT_NAME: &project_name reproduction_no_phonemes
+
         # Set Data paths
+        OUTPUT_PATH: &output_path new_models/r8
         DATA_PATH: &data_path training_data/wlasl_new.json
         POSE_PATH: &pose_path training_data/wlasl_poses_pickle/
         TARGET_Path: &target_path  openhands.datasets.isolated.WLASLDataset
@@ -8,12 +13,10 @@ data:
         # Set modality
         MOD: &modality "pose"
 
-        # Set model name
-        MODEL_NAME: &model_name base_bert
 
         # Select phonological parameters
         PARAMETERS: &params  [
-                "Handshape"
+                #"Handshape"
                 # "Selected Fingers",
                 # "Flexion",
                 # "Spread",
@@ -70,7 +73,7 @@ data:
             _target_: *target_path
             split_file: *data_path
             root_dir: *pose_path
-            splits: "test"
+            splits: "valid"
             modality: *modality
 
         transforms:
@@ -122,22 +125,22 @@ optim:
             T_max: 10
 
 trainer:
-    max_epochs: 150
-    # resume_from_checkpoint: /path/to/model.ckpt
+    max_epochs: 250
+    #resume_from_checkpoin: new_models/r8/epoch=147-step=66008.ckpt
 
 exp_manager:
     create_tensorboard_logger: true
     create_wandb_logger: true
     wandb_logger_kwargs:
         name: *model_name
-        project: PASL
+        project: *project_name
 
     create_checkpoint_callback: true
     checkpoint_callback_params:
         monitor: "val_acc"
         mode: "max"
         save_top_k: 1
-        dirpath: "new_models/"
+        dirpath: *output_path
 
     early_stopping_callback: true
     early_stopping_params:

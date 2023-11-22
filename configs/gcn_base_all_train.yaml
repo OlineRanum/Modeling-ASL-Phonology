@@ -1,35 +1,38 @@
 data:
     variables:
+        # Set model name
+        MODEL_NAME: &model_name base_decoupled_gcn_1
+        PROJECT_NAME: &project_name reproduction_no_phonemes
+
         # Set Data paths
+        OUTPUT_PATH: &output_path new_models/r1
         DATA_PATH: &data_path training_data/wlasl_new.json
         POSE_PATH: &pose_path training_data/wlasl_poses_pickle/
-        TARGET_Path: &target_path  openhands.datasets.isolated.WLASLDataset
+        TARGET_PATH: &target_path  openhands.datasets.isolated.WLASLDataset
         
         # Set modality
-        MOD: &modality "pose"
+        MOD: &modality "pose" 
 
-        # Set model name
-        MODEL_NAME: &model_name base_decoupled_gcn
 
         # Select phonological parameters
         PARAMETERS: &params  [
-                "Handshape",
-                 "Selected Fingers",
-                 "Flexion",
-                 "Spread",
-                 "Spread Change",
-                 "Thumb Position",
-                 "Thumb Contact",
-                 "Sign Type",
-                 "Path Movement",
-                 "Repeated Movement",
-                 "Major Location",
-                 "Minor Location",
-                 "Second Minor Location",
-                 "Contact",
-                 "Nondominant Handshape", 
-                 "Wrist Twist",
-                 "Handshape Morpheme 2"
+                #"Handshape"
+                #"Selected Fingers",
+                # "Flexion",
+                # "Spread",
+                # "Spread Change",
+                # "Thumb Position",
+                # "Thumb Contact",
+                # "Sign Type",
+                # "Path Movement",
+                # "Repeated Movement",
+                # "Major Location",
+                # "Minor Location",
+                # "Second Minor Location",
+                # "Contact",
+                # "Nondominant Handshape", 
+                # "Wrist Twist",
+                # "Handshape Morpheme 2"
             ]
 
 
@@ -71,7 +74,7 @@ data:
             _target_: *target_path
             split_file: *data_path
             root_dir: *pose_path
-            splits: "test"
+            splits: "valid"
             modality: *modality
 
         transforms:
@@ -160,14 +163,14 @@ exp_manager:
     create_wandb_logger: true
     wandb_logger_kwargs:
         name: *model_name
-        project: PASL
+        project: *project_name
 
     create_checkpoint_callback: true
     checkpoint_callback_params:
         monitor: "val_acc"
         mode: "max"
         save_top_k: 1
-        dirpath: "new_models/"
+        dirpath: *output_path
 
     early_stopping_callback: true
     early_stopping_params:
