@@ -7,7 +7,8 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 
 def get_trainer(cfg):
     tb_logger = TensorBoardLogger(save_dir="logs/")
-    wandb_logger = WandbLogger(project="my_project", name="my_experiment")
+    # TODO: Fix model name and projet 
+    wandb_logger = WandbLogger(project=cfg.exp_manager.wandb_logger_kwargs.project, name=cfg.exp_manager.wandb_logger_kwargs.name)
     trainer = pl.Trainer(logger=[tb_logger, wandb_logger], **cfg.trainer)
     experiment_manager(trainer, cfg.get("exp_manager", None))
     return trainer
