@@ -2,9 +2,13 @@ training_data/
 logs/
 wandb/
 lightning_logs/
+new_models/
 
 *.job
 slurm*
 *__pycache__*
 
 localnotes.txt
+train.py
+.gitignore
+.vscode/launch.json
