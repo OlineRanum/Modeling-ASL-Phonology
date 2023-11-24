@@ -69,7 +69,7 @@ class InferenceModel(pl.LightningModule):
         """
         # TODO: Write output to a csv
         results = []
-        splits = json.load(open(self.cfg.data.test_pipeline.split_file))
+        splits = json.load(open(self.cfg.data.test_pipeline.dataset.split_file))
         path2gloss = { instance["video_id"] : sign["gloss"] for sign in splits for instance in sign["instances"]}
         path2split = { instance["video_id"] : instance["split"] for sign in splits for instance in sign["instances"]}
         path2islex = { instance["video_id"] : instance["Handshape"]!=-1 for sign in splits for instance in sign["instances"]}
@@ -100,6 +100,7 @@ class InferenceModel(pl.LightningModule):
 
         for batch in dataloader:
             y_hat = self.model(batch["frames"].to(self._device))
+    
             y_true = [path2gloss[path.split("/")[-1].replace(".pkl","")] \
                 if path.split("/")[-1].replace(".pkl","") in path2gloss.keys() else None
                 for path in batch["files"] ]
@@ -115,30 +116,32 @@ class InferenceModel(pl.LightningModule):
                 row = {
                     "id" : batch["files"][sample_idx].split("/")[-1].replace(".pkl",""),
                     "true" : y_true[sample_idx],
-                    "enc": [n.item() for n in y_hat[2].cpu()[sample_idx].detach().numpy()],
+                    # "true_i": sample_idx,
                     "pred": rankings[0],
+                    # "pred_i": torch.argmax(gloss_probs, dim=-1),
                     "top10" : rankings[:10],
                     "a1" : rankings[0] == y_true[sample_idx],
                     "a3" : y_true[sample_idx] in rankings[:3],
-                    "rank" : rankings.index(y_true[sample_idx]) + 1
+                    "rank" : rankings.index(y_true[sample_idx])
                 }
                 if path2split[row["id"]] != "test" : continue
 
                 results_stats["all"]["a1"].append(row["a1"])
                 results_stats["all"]["a3"].append(row["a3"])
-                results_stats["all"]["rank"].append(row["rank"])
+                results_stats["all"]["rank"].append(row["rank"]+1)
                 results_stats["all"]["reciprocal_rank"].append(1/(row["rank"]+1))
                 
                 if path2islex[row["id"]]:
                     results_stats["asllex"]["a1"].append(row["a1"])
                     results_stats["asllex"]["a3"].append(row["a3"])
-                    results_stats["asllex"]["rank"].append(row["rank"])
+                    results_stats["asllex"]["rank"].append(row["rank"]+1)
                     results_stats["asllex"]["reciprocal_rank"].append(1/(row["rank"]+1))                    
                 else:
                     results_stats["nonlex"]["a1"].append(row["a1"])
                     results_stats["nonlex"]["a3"].append(row["a3"])
-                    results_stats["nonlex"]["rank"].append(row["rank"])
+                    results_stats["nonlex"]["rank"].append(row["rank"]+1)
                     results_stats["nonlex"]["reciprocal_rank"].append(1/(row["rank"]+1))
+
 
                 json.dump(row, open(self.cfg.data.test_pipeline.results,"a+"), indent=4)
                 
