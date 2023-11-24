@@ -1,9 +1,8 @@
 import torch
 import torch.nn.functional as F
 import torchmetrics
-from ..models.loader import get_model
+import math 
 from ..core.losses import CrossEntropyLoss, SmoothedCrossEntropyLoss
-from ..core.data import DataModule
 from .inference import InferenceModel
 
 class ClassificationModel(InferenceModel):
@@ -43,6 +42,8 @@ class ClassificationModel(InferenceModel):
         acc = self.accuracy_metric(F.softmax(y_hat, dim=-1), batch["labels"])
         if params:
             acc += sum([self.accuracy_metric(F.softmax(y_hat_params[p], dim=-1), batch["params"][p]) for p in params])
+            # This should probably be the average, in validation it does not matter as we are doing it per phoneme
+            acc = acc/(len(params) + 1)
 
         self.log("train_loss", loss, batch_size = len(batch['files']))
         # This was updated in newest version 
@@ -63,8 +64,12 @@ class ClassificationModel(InferenceModel):
         # This was updated in newest version 
         loss = self.loss(y_hat, batch["labels"])
         if params:
-            loss += sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
-        
+            param_loss = sum([self.loss(y_hat_params[p], batch["params"][p]) for p in params])
+            # If the batch[params] parameter is only zeros then the loss is nan 
+            # TODO: Do we want to fix this? 
+            if not math.isnan(param_loss): 
+                loss += param_loss
+    
         preds = F.softmax(y_hat, dim=-1)
         acc_top1 = self.accuracy_metric(preds, batch["labels"])
         acc_top3 = self.accuracy_metric(preds, batch["labels"], top_k=3)
