@@ -3,6 +3,7 @@ logs/
 wandb/
 lightning_logs/
 new_models/
+results/
 
 *.job
 slurm*
@@ -10,5 +11,8 @@ slurm*
 
 localnotes.txt
 train.py
-.gitignore
+paths.sh
+
 .vscode/launch.json
+
+train.py
