@@ -1,11 +1,11 @@
 data:
     variables:
         # Set model name
-        MODEL_NAME: &model_name p1_decoupled_gcn_1
+        MODEL_NAME: &model_name p1_decoupled_gcn_new_env
         PROJECT_NAME: &project_name reproduction_p1
 
         # Set Data paths
-        OUTPUT_PATH: &output_path new_models/p1/r1
+        OUTPUT_PATH: &output_path new_models/p1/test
         DATA_PATH: &data_path training_data/wlasl_new.json
         POSE_PATH: &pose_path training_data/wlasl_poses_pickle/
         TARGET_PATH: &target_path  openhands.datasets.isolated.WLASLDataset

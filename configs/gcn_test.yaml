@@ -1,12 +1,12 @@
-pretrained: new_models/p1/r4/epoch=66-step=29882.ckpt
+pretrained: new_models/p2/r2/epoch=189-step=84740.ckpt
 data:
     variables:
         # Set model name
-        MODEL_NAME: &model_name p1_decoupled_gcn_test_r4
-        PROJECT_NAME: &project_name p1
+        MODEL_NAME: &model_name p2_decoupled_gcn_test_r2
+        PROJECT_NAME: &project_name p2
         # Set Data paths
         OUTPUT_PATH: &output_path new_models/test
-        RESULT_PATH: &result_path results/p1/save_results_r4.jsonl
+        RESULT_PATH: &result_path results/p2/save_results_r2.jsonl
         DATA_PATH: &data_path training_data/wlasl_new.json
         POSE_PATH: &pose_path training_data/wlasl_poses_pickle/
         TARGET_Path: &target_path  openhands.datasets.isolated.WLASLDataset
@@ -16,7 +16,7 @@ data:
 
         # Select phonological parameters
         PARAMETERS: &params  [
-                "Handshape"
+                "Handshape",
                 # "Selected Fingers"
                 # "Flexion",
                 # "Spread",
@@ -27,7 +27,7 @@ data:
                 # "Path Movement",
                 # "Repeated Movement",
                 # "Major Location",
-                # "Minor Location",
+                 "Minor Location"
                 # "Second Minor Location",
                 # "Contact",
                 # "Nondominant Handshape", 
