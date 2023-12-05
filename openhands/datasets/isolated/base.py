@@ -89,12 +89,7 @@ class BaseIsolatedDataset(torch.utils.data.Dataset):
 
         self.params = {}
         self.read_params()
-        # if self.params:
-        #     for p, vals in self.params.items():
-        #         print(f"Found {len(vals)} {p}s in {splits} splits")
 
-        # conversion of human-readable label to number
-        # (-1 for phoneme types not meant to be classified)
         self.param_to_id = {
             param: { 
                 val : (i if param in selected_ptypes else -1) \

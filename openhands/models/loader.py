@@ -20,6 +20,25 @@ def load_encoder(encoder_cfg, in_channels):
             **encoder_cfg.params
             )
 
+    #### PONITA GRAPH MODEL FOR POSE ####
+    elif encoder_cfg.type == "ponita":
+        from .encoder.geometric.models.ponita import PONITA
+        output_dim = 256
+        return PONITA(in_channels,
+                        encoder_cfg.params.hidden_dim,
+                        output_dim,
+                        encoder_cfg.params.layers,
+                        output_dim_vec = 0,
+                        radius=encoder_cfg.params.radius,
+                        n=encoder_cfg.params.n,
+                        basis_dim=encoder_cfg.params.basis_dim,
+                        degree=encoder_cfg.params.degree,
+                        widening_factor=encoder_cfg.params.widening_factor,
+                        layer_scale=encoder_cfg.params.layer_scale,
+                        task_level='graph',
+                        multiple_readouts=encoder_cfg.params.multiple_readouts)
+    
+
     #### GRAPH MODELS FOR POSE ####
     elif encoder_cfg.type == "pose-flattener":
         from .encoder.graph.pose_flattener import PoseFlattener
@@ -58,8 +77,10 @@ def load_decoder(decoder_cfg, num_class, encoder, params = None):
     # else:
     #     n_out_features = encoder.n_out_features
 
-    n_out_features = encoder.n_out_features
-
+    try:
+        n_out_features = encoder.n_out_features
+    except AttributeError:
+        n_out_features = 256
     if decoder_cfg.type == "fc":
         from .decoder.fc import FC
 

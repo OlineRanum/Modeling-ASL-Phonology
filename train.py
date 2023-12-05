@@ -1,8 +1,10 @@
 import omegaconf
 from openhands.apis.classification_model import ClassificationModel
 from openhands.core.exp_utils import get_trainer
+import sys
+sys.path.append("openhands/models/encoder/geometric")
 
-cfg = omegaconf.OmegaConf.load("configs/gcn_train.yaml")
+cfg = omegaconf.OmegaConf.load("configs/ponita_train.yaml")
 trainer = get_trainer(cfg)
 
 model = ClassificationModel(cfg=cfg, trainer=trainer)
