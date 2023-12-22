@@ -1,4 +1,5 @@
-training_data/
+training_data/ASL/data
+training_data/NGT/data
 logs/
 wandb/
 lightning_logs/
