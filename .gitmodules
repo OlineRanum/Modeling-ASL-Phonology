@@ -1,5 +1,5 @@
-[submodule "openhands/models/encoder/Equivariant_SLR"]
-	path = openhands/models/encoder/Equivariant_SLR
+[submodule "openhands/models/external_models/Equivariant_SLR"]
+	path = openhands/models/external_models/Equivariant_SLR
 	url = https://github.com/OlineRanum/Equivariant_SLR.git
 [submodule "openhands/models/external_models/egnn"]
 	path = openhands/models/external_models/egnn
