@@ -15,7 +15,7 @@ PARAMS = [
     "Thumb Position", "Thumb Contact", "Sign Type", "Path Movement",
     "Repeated Movement", "Major Location", "Minor Location",
     "Second Minor Location", "Contact", "Nondominant Handshape", 
-    "Wrist Twist", "Handshape Morpheme 2"
+    "Wrist Twist"
 ]
 
 class BaseIsolatedDataset(torch.utils.data.Dataset):

@@ -1,10 +1,17 @@
-training_data/ASL/data
-training_data/NGT/data
+training_data/ASL/wlasl/
+training_data/ASL/semlex/
+training_data/NGT/data/
+training_data/gloss_lists/
+training_data/
+slurm/
+utils/
 logs/
 wandb/
 lightning_logs/
 new_models/
+configs/
 results/
+openhands/models/external_models/egnn/slr_system/slr_datasets/
 
 *.job
 slurm*
@@ -17,3 +24,6 @@ paths.sh
 .vscode/launch.json
 
 train.py
+# Data 
+*.pkl
+*.yaml
