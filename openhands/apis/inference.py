@@ -25,6 +25,7 @@ class InferenceModel(pl.LightningModule):
         self.datamodule.setup(stage=stage)
 
         self.model = self.create_model(cfg.model)
+        #self._device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self._device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         if stage == "test":
             self.model.to(self._device).eval()

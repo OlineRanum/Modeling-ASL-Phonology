@@ -5,6 +5,8 @@ from .isolated import (
     GSLDataset,
     INCLUDEDataset,
     WLASLDataset,
+    SEMLEXDataset,
+
 )
 from .pose_transforms import (
     Compose,

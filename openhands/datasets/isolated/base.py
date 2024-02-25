@@ -260,9 +260,14 @@ class BaseIsolatedDataset(torch.utils.data.Dataset):
         """
         # if "videos" in path:
         #     path = path.replace("videos","poses")
-
+        
         pose_data = pickle.load(open(path, "rb"))
-        return pose_data
+        
+        if isinstance(pose_data, np.ndarray):
+            return {'keypoints': torch.tensor(pose_data), 'confidences': torch.tensor(pose_data)}
+        
+        else:
+            return pose_data
 
     def read_video_data(self, index):
         """
@@ -364,7 +369,7 @@ class BaseIsolatedDataset(torch.utils.data.Dataset):
             pose_path = pose_path.replace("videos","poses") + ".pkl"
         #print(pose_path)
         pose_data = self.load_pose_from_path(pose_path)
-
+        
         pose_data["label"] = torch.tensor(label, dtype=torch.long)
         
         if not self.inference_mode:
@@ -387,14 +392,16 @@ class BaseIsolatedDataset(torch.utils.data.Dataset):
         data, path = self.read_pose_data(index)
         # imgs shape: (T, V, C)
         kps = data["keypoints"]
-        scores = data["confidences"]
-
+        try:
+            scores = data["confidences"]
+        except KeyError:
+            scores = None
         if not self.pose_use_z_axis:
             kps = kps[:, :, :2]
 
         if self.pose_use_confidence_scores:
-            kps = np.concatenate([kps, np.expand_dims(scores, axis=-1)], axis=-1)
-
+            kps = np.concatenate([kps, np.expand_dims(scores, axis=-1)], axis=-1)   
+            
         kps = np.asarray(kps, dtype=np.float32)
         formatted_data = {
             "frames": torch.tensor(kps).permute(2, 0, 1),  # (C, T, V)

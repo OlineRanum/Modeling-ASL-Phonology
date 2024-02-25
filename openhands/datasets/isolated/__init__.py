@@ -5,6 +5,7 @@ from .gsl import GSLDataset
 from .include import INCLUDEDataset
 from .lsa64 import LSA64Dataset
 from .wlasl import WLASLDataset
+from .semlex import SEMLEXDataset
 from .msasl import MSASLDataset
 from .bosphorus22k import Bosphorus22kDataset
 from .asllvd import ASLLVDDataset
@@ -21,11 +22,11 @@ __all__ = [
     "INCLUDEDataset",
     "LSA64Dataset",
     "WLASLDataset",
+    "SEMLEXDataset"
     "MSASLDataset",
     "Bosphorus22kDataset",
     "ASLLVDDataset",
     "RWTH_Phoenix_Signer03_Dataset",
-    
     "ConcatDataset",
     "FingerSpellingDataset"
 ]
