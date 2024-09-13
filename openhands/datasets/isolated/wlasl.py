@@ -24,7 +24,7 @@ class WLASLDataset(BaseIsolatedDataset):
         with open(self.split_file, "r") as f:
             self.content = json.load(f)
         self.glosses = sorted([gloss_entry["gloss"] for gloss_entry in self.content])
-
+        
     def read_params(self, ):
         with open(self.split_file, "r") as f:
             self.content = json.load(f)
@@ -34,7 +34,7 @@ class WLASLDataset(BaseIsolatedDataset):
                 for gloss_entry in self.content for instance in gloss_entry["instances"]]))
             for param in PARAMS
         }
-
+        
     def read_original_dataset(self):
         for gloss_entry in self.content:
             gloss = gloss_entry["gloss"]
@@ -48,6 +48,7 @@ class WLASLDataset(BaseIsolatedDataset):
 
                 instance_entry = instance["video_id"], self.gloss_to_id[gloss], params
                 self.data.append(instance_entry)
+            
 
     def read_video_data(self, index):
         # print(self.data[index])

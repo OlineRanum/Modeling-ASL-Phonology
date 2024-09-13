@@ -22,11 +22,8 @@ class DataModule(pl.LightningDataModule):
 
     def setup(self, stage=None):
         if stage == "fit":
-            # self.train_dataset_labeled = self._instantiate_dataset(self.data_cfg.train_pipeline_labeled)
-            # self.train_dataset_unlabeled = self._instantiate_dataset(self.data_cfg.train_pipeline_unlabeled)
             self.train_dataset = self._instantiate_dataset(self.data_cfg.train_pipeline)
             self.valid_dataset = self._instantiate_dataset(self.data_cfg.valid_pipeline)
-            # print("Train set size:", len(self.train_dataset_labeled) + len(self.train_dataset_unlabeled))
             print("Train set size:", len(self.train_dataset))
             print("Valid set size:", len(self.valid_dataset))
 
@@ -57,19 +54,6 @@ class DataModule(pl.LightningDataModule):
             raise ValueError("Unknown `stage` value when calling `data_module.setup()`")
 
     def train_dataloader(self):
-        # labeled_dataloader = hydra.utils.instantiate(
-        #     self.data_cfg.train_pipeline_labeled.dataloader,
-        #     dataset=self.train_dataset_labeled,
-        #     collate_fn=self.train_dataset_labeled.collate_fn,
-        # )
-
-        # unlabeled_dataloader = hydra.utils.instantiate(
-        #     self.data_cfg.train_pipeline_unlabeled.dataloader,
-        #     dataset=self.train_dataset_unlabeled,
-        #     collate_fn=self.train_dataset_unlabeled.collate_fn,
-        # )
-
-        # return { "labeled" : labeled_dataloader, "unlabeled" : unlabeled_dataloader }
 
         dataloader = hydra.utils.instantiate(
             self.data_cfg.train_pipeline.dataloader,

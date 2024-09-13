@@ -263,8 +263,10 @@ class BaseIsolatedDataset(torch.utils.data.Dataset):
         
         pose_data = pickle.load(open(path, "rb"))
         
+        
         if isinstance(pose_data, np.ndarray):
-            return {'keypoints': torch.tensor(pose_data), 'confidences': torch.tensor(pose_data)}
+            pose_data = np.nan_to_num(pose_data, copy=True, nan=0.0)
+            return {'keypoints': torch.tensor(pose_data), 'confidences': torch.tensor(pose_data)/1000.}
         
         else:
             return pose_data
@@ -395,7 +397,7 @@ class BaseIsolatedDataset(torch.utils.data.Dataset):
         try:
             scores = data["confidences"]
         except KeyError:
-            scores = None
+            scores = data["keypoints"]/1000.
         if not self.pose_use_z_axis:
             kps = kps[:, :, :2]
 
